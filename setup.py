@@ -12,6 +12,6 @@ setup(
     author=author,
     url='https://github.com/cangmean/fet',
     install_requires=[
-        'oss2', 'pytest', 'pycryptodome', 'redis'
+        'oss2', 'pytest', 'pycryptodome', 'redis', 'flask'
     ],
 )
