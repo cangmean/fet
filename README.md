@@ -42,3 +42,15 @@ app.run(debug=True)
 [INFO] [2018-08-10 12:56:22] "GET / HTTP/1.1" 200 rtime = 29.23 ms
 [INFO] [2018-08-10 12:56:22] "GET /favicon.ico HTTP/1.1" 404 rtime = 156.93 ms
 ```
+
+### 阿里 oss 扩展
+
+Flask alioss 接口， 可以通过扩展的方式快速配置并使用。[阿里 oss 实例](./docs/alioss.md)
+
+### AES 加密解密 扩展
+
+使用 AES 加密解密， 自行设置`secret_key`和`salt`加密数据。[加密解密实例](./docs/cryptor.md)
+
+### session 扩展
+
+使用 redis 实现 session, 可配置 session 前缀和全局过期时间。[session 实例](./docs/session.md)
