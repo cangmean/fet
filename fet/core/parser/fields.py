@@ -11,6 +11,7 @@ class BaseField(object):
         type=None,
         validation=None,
         choices=None,
+        help=None,
         **kwargs
     ):
         """
@@ -20,12 +21,14 @@ class BaseField(object):
         :param type: 字段默认类型
         :param validation: 字段验证函数
         :param choices: 字段值为choices中的内容
+        :param help: 报错显示信息
         """
         self.name = name
         self.required = required
         self.default = default
         self.type = type
         self.validation = validation
+        self.help = help
     
     def error(self, message, **kwargs):
         raise ValidationError(message, **kwargs)
@@ -109,13 +112,13 @@ class IntField(BaseField):
         kwargs['type'] = self.field_type
         kwargs['default'] = 0
         super().__init__(**kwargs)
-    
+
     def validate(self, value):
         # copy https://github.com/MongoEngine/mongoengine/blob/master/mongoengine/fields.py#L260
         try:
             value = int(value)
         except Exception:
-            self.error('%s could not be converted to int' % value)
+            self.error('`%s` could not be converted to int' % value)
 
         if self.min_value is not None and value < self.min_value:
             self.error('Integer value is too small')

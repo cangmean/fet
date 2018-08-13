@@ -1,4 +1,5 @@
 from .fields import BaseField, StringField
+from .errors import ValidationError
 
 
 class ParserMetaClass(type):
@@ -22,6 +23,7 @@ class BaseParser(object):
     def __init__(self, **values):
         # copy https://github.com/MongoEngine/mongoengine/blob/v0.1.1/mongoengine/base.py#L168
         self._data = {}
+        self._errors = {}
         for attr_name, attr_value in self._fields.items():
             if attr_name in values:
                 setattr(self, attr_name, values.pop(attr_name))
@@ -34,4 +36,18 @@ class BaseParser(object):
 
 
 class Parser(BaseParser, metaclass=ParserMetaClass):
-    pass
+    
+    def is_valid(self):
+        try:
+            for attr_name, attr_value in self._fields.items():
+                value = self._data.get(attr_name)
+                attr_value.validate(value)
+                if not isinstance(value, attr_value.type):
+                    setattr(self, attr_name, attr_value.type(value))
+            return True
+        except ValidationError as e:
+            self._errors[attr_name] = str(e)
+            return False
+    
+    def errors(self):
+        return self._errors
