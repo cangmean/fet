@@ -92,15 +92,11 @@ class StringField(BaseField):
         super().__init__(**kwargs)
 
     def validate(self, value):
-        if not isinstance(value, (self.field_type, bytes)):
-            self.error('StringField only accepts values')
-    
-        if self.max_length is not None and len(value) > self.max_length:
-            self.error('String value is too long')
-
-        if self.min_length is not None and len(value) < self.min_length:
-            self.error('String value is too short')
-
+        if self.required:
+            try:
+                value = str(value)
+            except TypeError:
+                self.error('`%s` could not be')
 
 class IntField(BaseField):
     
@@ -116,7 +112,7 @@ class IntField(BaseField):
     def validate(self, value):
         # copy https://github.com/MongoEngine/mongoengine/blob/master/mongoengine/fields.py#L260
         try:
-            value = int(value)
+            value = self.field_type(value)
         except Exception:
             self.error('`%s` could not be converted to int' % value)
 

@@ -8,7 +8,8 @@ class Person(Parser):
     age = IntField()
 
 
-p = Person(name='mink', age='hello')
+p = Person()
 
 print(p.is_valid(), p.name, p.age, type(p.age))
-print(p.errors())
+print(p.parse_error())
+print(p.parse_data())
