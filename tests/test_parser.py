@@ -5,7 +5,7 @@ from fet.core.parser.fields import StringField, IntField
 class Person(Parser):
 
     name = StringField()
-    age = IntField()
+    age = IntField(default=3)
 
 
 p = Person()

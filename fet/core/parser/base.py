@@ -19,9 +19,13 @@ class ParserMetaClass(type):
 
 
 class BaseParser(object, metaclass=ParserMetaClass):
+    
 
     def __init__(self, **values):
         # copy https://github.com/MongoEngine/mongoengine/blob/v0.1.1/mongoengine/base.py#L168
+        """ 解析基础类
+        :param values: 创建解析类时的参数
+        """
         self._data = {}
         self._errors = {}
         for attr_name, attr_value in self._fields.items():
@@ -48,8 +52,6 @@ class Parser(BaseParser):
             for attr_name, attr_value in self._fields.items():
                 value = self._data.get(attr_name)
                 attr_value.validate(value)
-                if not isinstance(value, attr_value.type):
-                    setattr(self, attr_name, attr_value.type(value))
             return True
         except ValidationError as e:
             self._errors[attr_name] = str(e)
@@ -61,5 +63,9 @@ class Parser(BaseParser):
     def parse_data(self):
         if self._errors:
             return None
-        else:
-            return self._data
+        
+        _data = {}
+        for k, v in self._data.items():
+            if v is not None:
+                _data[k] = v
+        return _data

@@ -28,12 +28,13 @@ class BaseField(object):
         self.default = default
         self.type = type
         self.validation = validation
+        self.choices = choices
         self.help = help
     
     def error(self, message, **kwargs):
         raise ValidationError(message, **kwargs)
     
-    def validate(self, value):
+    def validate(self, value, **kwargs):
         """ 需要子类去实现"""
         raise NotImplementedError('Validate not implement.')
     
@@ -63,7 +64,10 @@ class BaseField(object):
             else:
                 raise ValueError('validation argument for "%s" must be a '
                                  'callable.' % self.name)
-    
+        
+        if self.required and value is None:
+            raise self.error('`%s` must be required' % self.name)
+
     def __get__(self, instance, owner):
         # copy https://github.com/MongoEngine/mongoengine/blob/v0.1.1/mongoengine/base.py#L20
         if instance is None:
@@ -92,11 +96,13 @@ class StringField(BaseField):
         super().__init__(**kwargs)
 
     def validate(self, value):
-        if self.required:
+        self._validate(value)
+        if value is not None:
             try:
                 value = str(value)
             except TypeError:
-                self.error('`%s` could not be')
+                self.error('`%s` could not be converted to string' % self.name)
+
 
 class IntField(BaseField):
     
@@ -106,21 +112,17 @@ class IntField(BaseField):
         self.min_value = min_value
         self.max_value = max_value
         kwargs['type'] = self.field_type
-        kwargs['default'] = 0
         super().__init__(**kwargs)
 
     def validate(self, value):
         # copy https://github.com/MongoEngine/mongoengine/blob/master/mongoengine/fields.py#L260
-        try:
-            value = self.field_type(value)
-        except Exception:
-            self.error('`%s` could not be converted to int' % value)
-
-        if self.min_value is not None and value < self.min_value:
-            self.error('Integer value is too small')
-
-        if self.max_value is not None and value > self.max_value:
-            self.error('Integer value is too large')
+        self._validate(value)
+        if value is not None:
+            print(12, value)
+            try:
+                value = int(value)
+            except Exception:
+                self.error('`%s` could not be converted to int' % value)
 
 
 class BoolField(BaseField):
