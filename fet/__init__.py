@@ -1,13 +1,12 @@
-__version__ = '0.1'
-__author__ = 'cangmean'
-
 import time
 from werkzeug import serving
 from werkzeug._internal import _log
 from flask import Flask
 from fet.utils import get_current_time
 
-__all__ = ['_Flask']
+__all__ = ['_Flask', '__version__']
+
+__version__ = '0.1'
 
 
 class _FetRequestHandler(serving.WSGIRequestHandler):
@@ -16,12 +15,12 @@ class _FetRequestHandler(serving.WSGIRequestHandler):
         """ 重写父类方法"""
         self._st = time.time()
         return super().handle_one_request()
-    
+
     def send_response(self, code, message=None):
         """ 重写父类方法"""
         self._et = time.time()
         return super().send_response(code, message=None)
-    
+
     def get_rtime(self):
         """ 响应耗时"""
         rtime = (self._et - self._st) * 1000
@@ -38,13 +37,13 @@ class _FetRequestHandler(serving.WSGIRequestHandler):
 
 class _Flask(Flask):
     """ Flask子类， 用于重写默认werkzeug打印的日志
-        
+
         from fet import _Flask as Flask
 
         app = Flask(__name__)
         ...
         app.run()
-    
+
     """
 
     def run(self, host=None, port=None, debug=None,

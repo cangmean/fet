@@ -1,8 +1,7 @@
 from setuptools import setup, find_packages
-import fet
 
-version = fet.__version__
-author = fet.__author__
+version = '0.1'
+author = 'cangmean'
 
 setup(
     name="fet",
