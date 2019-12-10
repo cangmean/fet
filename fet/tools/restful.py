@@ -6,8 +6,8 @@ from flask import jsonify
 from flask.views import MethodView
 from flask_restful.reqparse import Argument
 from flask_restful.reqparse import RequestParser
-from fet.utils import to_string
 
+from fet.utils import to_string
 
 
 class ApiJsonify(object):
@@ -17,11 +17,11 @@ class ApiJsonify(object):
         return jsonify(**dic)
 
     @classmethod
-    def ok(cls, **kw):
-        return cls.response('0', **kw)
+    def ok(cls, code=200, **kw):
+        return cls.response(code, **kw)
 
     @classmethod
-    def no(cls, errmsg, code='-1', **kw):
+    def no(cls, errmsg, code=500, **kw):
         return cls.response(code, errmsg=errmsg, **kw)
 
 
@@ -29,7 +29,8 @@ api_jsonify = ApiJsonify()
 
 
 def _abort(http_status_code, *args, **kw):
-    errmsg = kw['message'].values()[0]
+    errors = list(kw['message'].values())
+    errmsg = errors[0]
     response = api_jsonify.no(errmsg, code=http_status_code)
     response.headers['Content-Type'] = 'application/json'
     abort(response)
@@ -44,33 +45,23 @@ class RestApi(object):
 
     def route(self, url, **options):
         """ 通过装饰器注册路由
-
         以下是例子:
-
             api = RestApi('home', __name__)
-
             @api.route('/')
             @api.route('/home, endpoint='home')
             class HomeApi(RestView):
-
                 def get(self):
-
                     return self.ok()
-
         也可以限制每个路由接受的方法
-
             @api.route('/', methods=['GET'])
             @api.route('/create, methods=['POST'])
             class EmployeeCreateApi(RestView):
-
                 def get(self):
                     return self.ok()
-
                 def post(self):
                     name = request.form.get('name')
                     ...
                     return self.ok()
-
         """
 
         def decorator(cls):
@@ -115,8 +106,9 @@ class _Argument(Argument):
                 try:
                     validator(value)
                 except Exception as error:
-                    error_message = getattr(validator, 'message', '') or to_string(error)
-                    _abort('-1', message={self.name: error_message})
+                    error_message = getattr(
+                        validator, 'message', '') or to_string(error)
+                    _abort(400, message={self.name: error_message})
 
     def process_parse(self, func):
         """ 装饰解析的值"""

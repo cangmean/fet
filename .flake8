@@ -1,0 +1,10 @@
+[flake8]
+# W191: tabs instead of spaces
+# E302: expected 2 blank lines, found 0
+# E265: block comment should start with '# '
+# E241: multiple spaces after ':'
+# F403: from . import *
+# E401: multiple imports on one line
+# E501: line too long
+ignore = E501,W503
+max-line-length = 110

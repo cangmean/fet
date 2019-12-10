@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.2.3
+    hooks:
+      - id: trailing-whitespace
+      - id: check-docstring-first
+      - id: check-yaml
+      - id: debug-statements
+      - id: name-tests-test
+      - id: requirements-txt-fixer
+      - id: flake8
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v1.6.0
+    hooks:
+      - id: reorder-python-imports
+        language_version: python2.7
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v1.21.0
+    hooks:
+      - id: pyupgrade
