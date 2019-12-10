@@ -2,28 +2,12 @@
 import flask_restful
 from flask import abort
 from flask import Blueprint
-from flask import jsonify
 from flask.views import MethodView
 from flask_restful.reqparse import Argument
 from flask_restful.reqparse import RequestParser
 
+from fet.mixins.rest import ApiJsonify
 from fet.utils import to_string
-
-
-class ApiJsonify(object):
-    @classmethod
-    def response(cls, code, errmsg="", **kw):
-        dic = {"code": code, "errmsg": errmsg, "data": kw}
-        return jsonify(**dic)
-
-    @classmethod
-    def ok(cls, code=200, **kw):
-        return cls.response(code, **kw)
-
-    @classmethod
-    def no(cls, errmsg, code=500, **kw):
-        return cls.response(code, errmsg=errmsg, **kw)
-
 
 api_jsonify = ApiJsonify()
 
