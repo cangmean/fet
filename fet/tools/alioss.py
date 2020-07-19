@@ -39,7 +39,7 @@ class Bucket(object):
             url = external_url
         else:
             raise ValueError('Url not exists.')
-        
+
         if not url.startswith(protocol):
             url = protocol + '://' + url
 
@@ -54,12 +54,21 @@ class Bucket(object):
             name=name
         )
         return url
-    
+
     def is_exists(self, name):
         """ 判断是否存在
         :param name: 远程文件路径
         """
         return self.bucket.object_exists(name)
+
+    def get_filenames(self, prefix='/'):
+        """ 获取某一个路径下的所有文件
+        :param prefix: 下载路径的前缀, 比如 fun/ 表示获取fun/目录下所有的文件
+        """
+        items = []
+        for obj in oss2.ObjectIterator(self.bucket, prefix=prefix):
+            items.append(obj.key)
+        return items
 
     def upload_file(self, name, path):
         """ 上传文件
@@ -98,7 +107,6 @@ class Bucket(object):
         except Exception as e:
             logger.error(str(e))
 
-
     def down_file_data(self, name):
         """ 下载文件二进制数据
         :param name: 远程文件路径
@@ -135,13 +143,13 @@ class ALIOSS(object):
     def init_app(self, app):
         if not hasattr(app, 'extensions'):
             app.extensions = {}
-        
+
         app.config.setdefault('FET_OSS_ACCESS_ID', None)
         app.config.setdefault('FET_OSS_ACCESS_SECRET', None)
         app.config.setdefault('FET_OSS_INTERNAL_URL', None)
         app.config.setdefault('FET_OSS_EXTERNAL_URL', None)
         app.config.setdefault('FET_OSS_BUCKET_NAME', None)
-        
+
         app.extensions['fet_oss'] = self
         if not self.bucket:
             self.bucket = self.get_bucket(app)
